@@ -1,14 +1,11 @@
 # Forex Tracker
-
-[![CI](https://github.com/Hqasim/forex-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/Hqasim/forex-tracker/actions/workflows/ci.yml)
-[![Scheduled scrape](https://github.com/Hqasim/forex-tracker/actions/workflows/scrape.yml/badge.svg)](https://github.com/Hqasim/forex-tracker/actions/workflows/scrape.yml)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A small, production-shaped data pipeline: a **Scrapy** spider scrapes daily USD
-exchange rates, validates and persists them to **SQLite**, and a **FastAPI**
-service and **matplotlib** chart command expose the resulting history. A
-GitHub Actions workflow runs the scrape on a schedule so the dataset grows on
+A small, production-shaped data pipeline: a **Scrapy** spider scrapes daily
+foreign currency exchange rates, validates and persists them to **SQLite**,
+and a **FastAPI** service and **matplotlib** chart command expose the resulting
+history. A GitHub Actions workflow runs the scrape on a schedule so the dataset grows on
 its own.
 
 This started as a one-off scraping script; the current version rebuilds it
