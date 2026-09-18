@@ -1,2 +1,29 @@
-# Ignore Python Virtual Enviroment
-/env
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+.venv/
+env/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Scrapy
+.scrapy/
+
+# Generated locally (or by the scheduled scrape workflow, which force-adds
+# the artifacts it intends to commit)
+data/
+
+# Editors
+.vscode/
+.idea/
