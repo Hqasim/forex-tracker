@@ -290,9 +290,15 @@ Notes for anyone reading the source directly:
 
 > **Schema note:** the rate table's schema changed (PKR buy/sell rates
 > instead of a single units-per-USD figure) earlier in this project's
-> history. There's no migration tooling yet (see Design decisions), so a
-> `data/forex_tracker.db` from before that change won't load correctly —
-> delete it and run `forex-tracker scrape` again.
+> history. There's no migration tooling yet (see Design decisions) — but
+> you don't need to do anything about it either: `get_engine()` in
+> `db/session.py` detects a table whose on-disk columns don't match the
+> current model and rebuilds it automatically (dropping whatever rows it
+> held), rather than every query failing with `OperationalError: no such
+> column`. This is exactly what happened for real the first time
+> `scrape.yml` ran against a `data/forex_tracker.db` committed under the
+> old schema — see Design decisions for why dropping-and-rebuilding is an
+> acceptable fix here rather than a real migration.
 
 ## Automation
 
@@ -332,6 +338,20 @@ every push across Python 3.12, 3.13, and 3.14.
   zero infrastructure. If this needed multiple writers or larger scale,
   the natural next step is Postgres + Alembic migrations (SQLModel already
   gives a straightforward migration path there).
+- **Detect-and-rebuild instead of real migrations.** With no migration
+  tooling, `SQLModel.metadata.create_all()` only creates missing tables —
+  it never alters an existing one, so a schema change (like adding
+  `buy_rate`/`sell_rate`) left any already-committed `.db` file's table
+  stale forever, failing every query with `OperationalError: no such
+  column`. That's exactly what broke the scheduled workflow's first run
+  after that change shipped. `db/session.py::_rebuild_stale_tables`
+  compares each table's actual columns against the current model on
+  startup and drops-and-recreates anything that doesn't match, logging a
+  warning. Losing the stale rows is an acceptable tradeoff *here*: forex.pk
+  is the real source of truth, every row is re-derivable by scraping it
+  again, and the store was never meant to be a permanent record (see
+  Data retention) — this would be the wrong fix for data that isn't
+  recoverable elsewhere, where a real migration is worth the extra effort.
 - **`Decimal`, not `float`, for rates.** Exchange rates are financial
   data; storing them as `Decimal` avoids floating-point representation
   error creeping into stored history.
