@@ -67,9 +67,8 @@ makes every trend readable.
 > workflow keeps running daily, these become authentic 90-day trends;
 > regenerate them any time with `forex-tracker chart`.
 >
-> Add further screenshots (a terminal run of `forex-tracker scrape`, the
-> Swagger UI at `http://127.0.0.1:8000/docs`, an example API response) to
-> `docs/screenshots/` and reference them here.
+These are API docs:
+![API Docs](docs/screenshots/api_docs.png)
 
 ## Architecture
 
