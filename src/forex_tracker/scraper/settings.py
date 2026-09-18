@@ -34,6 +34,7 @@ RETRY_TIMES = 3
 ITEM_PIPELINES = {
     "forex_tracker.scraper.pipelines.ValidationPipeline": 100,
     "forex_tracker.scraper.pipelines.SQLModelPipeline": 300,
+    "forex_tracker.scraper.pipelines.RetentionPipeline": 400,
 }
 
 LOG_LEVEL = "INFO"

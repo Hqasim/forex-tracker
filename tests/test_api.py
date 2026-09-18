@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 import pytest
@@ -17,14 +17,26 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setenv("FOREX_TRACKER_DB_PATH", str(tmp_path / "test.db"))
     db_session.get_engine.cache_clear()
 
+    now = datetime.now(UTC)
     with db_session.get_session() as session:
         session.add(
             ExchangeRate(
                 currency="EUR",
-                rate=Decimal("0.8659"),
+                buy_rate=Decimal("318.94"),
+                sell_rate=Decimal("323.95"),
                 source="forex.pk",
-                source_updated_at="Thu, Jun 11 2026, 19:58 GMT",
-                scraped_at=datetime(2026, 6, 11, tzinfo=UTC),
+                source_updated_at="Fri, Sep 18 2026, 22:13 PST (GMT+5)",
+                scraped_at=now,
+            )
+        )
+        session.add(
+            ExchangeRate(
+                currency="EUR",
+                buy_rate=Decimal("310.00"),
+                sell_rate=Decimal("315.00"),
+                source="forex.pk",
+                source_updated_at="stale",
+                scraped_at=now - timedelta(days=120),
             )
         )
         session.commit()
@@ -47,13 +59,16 @@ def test_latest_rates(client: TestClient) -> None:
     body = response.json()
     assert len(body) == 1
     assert body[0]["currency"] == "EUR"
-    assert body[0]["rate"] == "0.865900"
+    assert body[0]["buy_rate"] == "318.940000"
+    assert body[0]["sell_rate"] == "323.950000"
 
 
-def test_history_returns_stored_point(client: TestClient) -> None:
+def test_history_returns_recent_point_only(client: TestClient) -> None:
     response = client.get("/rates/history", params={"currency": "eur"})
     assert response.status_code == 200
-    assert response.json()[0]["currency"] == "EUR"
+    body = response.json()
+    assert len(body) == 1
+    assert body[0]["source_updated_at"] != "stale"
 
 
 def test_history_unknown_currency_returns_404(client: TestClient) -> None:

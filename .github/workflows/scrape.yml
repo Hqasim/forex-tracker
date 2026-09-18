@@ -26,13 +26,13 @@ jobs:
       - name: Scrape latest rates into SQLite history
         run: forex-tracker scrape
 
-      - name: Render a sample trend chart
-        run: forex-tracker chart EUR --output docs/screenshots/eur_trend.png
+      - name: Render one trend chart per tracked currency
+        run: forex-tracker chart --output-dir docs/screenshots
 
       - name: Commit updated history
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f data/forex_tracker.db docs/screenshots/eur_trend.png
+          git add -f data/forex_tracker.db docs/screenshots/*_trend.png
           git diff --cached --quiet || git commit -m "chore: scheduled rate scrape $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push
