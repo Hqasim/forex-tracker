@@ -46,13 +46,6 @@ you're evaluating the engineering itself, **Architecture** and
   on every push.
 
 ## Screenshots
-
-Each tracked currency renders as its own chart — deliberately, not as one
-shared plot. USD trades around 278 PKR and INR around 2.6–3 PKR; on a single
-shared y-axis, INR's own trend would be flattened to a near-invisible line
-near zero. A separate, auto-scaled y-axis per currency is what actually
-makes every trend readable.
-
 | | |
 |---|---|
 | ![USD trend](docs/screenshots/usd_trend.png) | ![EUR trend](docs/screenshots/eur_trend.png) |
@@ -60,10 +53,7 @@ makes every trend readable.
 | ![INR trend](docs/screenshots/inr_trend.png) | |
 
 > These are `forex-tracker chart`'s real output against this repo's own
-> scraped data, with a handful of synthetic historical points layered in
-> locally purely so the trend and the x-axis's day→month compression are
-> visible in a single screenshot — the live scheduled automation has only
-> run a few times so far, so its *genuine* history is still short. As the
+> scraped data. As the
 > workflow keeps running daily, these become authentic 90-day trends;
 > regenerate them any time with `forex-tracker chart`.
 >
@@ -74,7 +64,7 @@ These are API docs:
 
 ```mermaid
 flowchart TD
-    Source["forex.pk<br/>open_market_rates.asp"]
+    Source["https://www.forex.pk/open_market_rates.asp"]
     Spider["RatesSpider (Scrapy)<br/>anchor-based XPath selectors"]
     Validate["ValidationPipeline<br/>reject unknown/malformed/inverted rates"]
     Persist["SQLModelPipeline<br/>write ExchangeRate rows"]
